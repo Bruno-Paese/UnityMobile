@@ -84,6 +84,7 @@ MonoBehaviour:
   targetTransform: {fileID: 2143689757966033139}
   startPos: {fileID: 32032785546740398}
   endPos: {fileID: 209255748477682246}
+  targetSound: {fileID: 8300000, guid: da6bfbcad3e09504ebe5a29085cee451, type: 3}
 --- !u!54 &5880798776015346728
 Rigidbody:
   m_ObjectHideFlags: 0
