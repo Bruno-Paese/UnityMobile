@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     public Animator animator;
     public float laneSwitchTime = .2f;
     private Lanes lane;
+    public float speed = 1f;
 
     public Lanes Lane {
         get => lane;
@@ -42,7 +43,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        transform.position += Vector3.forward * speed * Time.deltaTime;
     }
 
     public void Jump()
