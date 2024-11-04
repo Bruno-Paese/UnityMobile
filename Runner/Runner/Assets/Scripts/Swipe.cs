@@ -31,6 +31,7 @@ public class Swipe : MonoBehaviour
                 Vector2 direction = endPos - initialPos;
                 direction = direction.normalized;
                 direction = new Vector2(Mathf.Round(direction.x), Mathf.Round(direction.y));
+                CheckDirection(direction);
             }
         }
     }
