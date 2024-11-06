@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,9 @@ public class Player : MonoBehaviour
     public float laneSwitchTime = .2f;
     private Lanes lane;
     public float speed = 1f;
+    public GameObject model;
+    RaycastHit groundHit;
+    public LayerMask groundLayers;
 
     public Lanes Lane {
         get => lane;
@@ -32,6 +36,16 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void OnTriggerEnter(Collider other)
+    {
+        if (other.tag != "Section")
+        {
+            return;
+        }
+
+        Game.instance.levelGenerator.SpawnSection(true);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -44,6 +58,10 @@ public class Player : MonoBehaviour
     void Update()
     {
         transform.position += Vector3.forward * speed * Time.deltaTime;
+        if (Physics.Raycast(model.transform.position + Vector3.up* .3f, Vector3.down, out groundHit, .5f, groundLayers))
+        {
+            model.transform.position = groundHit.point;   
+        }
     }
 
     public void Jump()
@@ -61,7 +79,7 @@ public class Player : MonoBehaviour
                 Lane  = Lanes.Middle;
                 break;
             case Lanes.Middle:
-                Lane = Lanes.Right; 
+                Lane = Lanes.Right;
                 break;
             case Lanes.Right:
                 break;

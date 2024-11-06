@@ -10,17 +10,23 @@ public class LevelGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SpawnSection();
-        SpawnSection();
-        SpawnSection();
+        SpawnSection(false);
+        SpawnSection(false);
+        SpawnSection(false);
     }
 
     // Update is called once per frame
-    void SpawnSection()
+    public void SpawnSection(bool deleteFirstSection)
     {
         int randomIndex = Random.Range(0, sectionPrefabs.Length);
         Section currentSection = Instantiate(sectionPrefabs[randomIndex], new Vector3(0, 0, totalSections*100), Quaternion.identity);
         sections.Add(currentSection);
         totalSections++;
+
+        if (deleteFirstSection)
+        {
+            Destroy(sections[0].gameObject);
+            sections.RemoveAt(0);
+        }
     }
 }
