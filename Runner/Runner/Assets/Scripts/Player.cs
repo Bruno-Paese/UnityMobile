@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum Lanes { Left, Middle, Right };
+public enum Height { Roll, Ground, Air, Jump};
 
 public class Player : MonoBehaviour
 {
@@ -11,6 +12,48 @@ public class Player : MonoBehaviour
     public float laneSwitchTime = .2f;
     private Lanes lane;
     public float speed = 1f;
+    public float gravity;
+    [Header("Jump")]
+    public float jumpHeight;
+    public float jumpTime;
+    private float verticalVelocity = 0f;
+    public Height heightInternal;
+    public Height height
+    {
+        get => heightInternal;
+        set
+        {
+            if (heightInternal != value)
+            {
+                heightInternal = value;
+                switch (heightInternal)
+                {
+                    case Height.Roll:
+                        animator.SetTrigger("Roll");
+                        break;
+                    case Height.Ground:
+                        animator.SetTrigger("Run");
+                        break;
+                    case Height.Air:
+                        animator.SetTrigger("Falling");
+                        break;
+                    case Height.Jump:
+                        animator.SetTrigger("Jump");
+                        LeanTween.moveY(model, model.transform.position.y + jumpHeight, jumpTime).setEaseOutQuad().setOnComplete(() =>
+                        {
+                            if (height == Height.Jump)
+                            {
+                                height = Height.Air;
+                            }
+                        });
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
     public GameObject model;
     RaycastHit groundHit;
     public LayerMask groundLayers;
@@ -28,7 +71,7 @@ public class Player : MonoBehaviour
                     LeanTween.moveX(gameObject, 0, laneSwitchTime).setEaseInOutSine();
                     break;
                 case Lanes.Right:
-                    LeanTween.moveX(gameObject, 2, laneSwitchTime).setEaseInOutSine();
+                        LeanTween.moveX(gameObject, 2, laneSwitchTime).setEaseInOutSine();
                     break;
                 default:
                     break;
@@ -52,26 +95,60 @@ public class Player : MonoBehaviour
         Lane = Lanes.Middle;
         animator = GetComponentInChildren<Animator>();
         animator.SetTrigger("Run");
+        height = Height.Ground;
     }
 
     // Update is called once per frame
     void Update()
     {
         transform.position += Vector3.forward * speed * Time.deltaTime;
-        if (Physics.Raycast(model.transform.position + Vector3.up* .3f, Vector3.down, out groundHit, .5f, groundLayers))
+
+        switch (heightInternal)
         {
-            model.transform.position = groundHit.point;   
+            case Height.Roll:
+                break;
+            case Height.Air:
+                if (Physics.Raycast(model.transform.position + Vector3.up* .3f, Vector3.down, out groundHit, .5f, groundLayers))
+                {
+                    verticalVelocity = 0f;
+                    height = Height.Ground;
+                } else
+                {
+                    verticalVelocity -= gravity * Time.deltaTime;
+                    model.transform.position += Vector3.up * verticalVelocity * Time.deltaTime;
+                }
+                break;
+            case Height.Ground:
+                if (Physics.Raycast(model.transform.position + Vector3.up* .3f, Vector3.down, out groundHit, .5f, groundLayers))
+                {
+                    verticalVelocity = 0f;
+                    model.transform.position = groundHit.point;
+                    break;
+                } else
+                {
+                    height = Height.Air;
+                }
+
+                break;
+            case Height.Jump:
+                break;
+            default:
+                break;
         }
     }
 
     public void Jump()
     {
-        animator.SetTrigger("Jump");
+        if (height == Height.Ground || height == Height.Roll)
+        {
+            height = Height.Jump;
+        }
     }
 
     public void Roll() {
-        animator.SetTrigger("Roll");
+        height = Height.Roll;
     }
+
     public void Rigth() {
         switch (Lane)
         {

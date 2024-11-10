@@ -796,6 +796,10 @@ MonoBehaviour:
   animator: {fileID: 0}
   laneSwitchTime: 0.2
   speed: 5
+  gravity: 7
+  jumpHeight: 1.5
+  jumpTime: 0.4
+  heightInternal: 0
   model: {fileID: 1541898947}
   groundLayers:
     serializedVersion: 2
