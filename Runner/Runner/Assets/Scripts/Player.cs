@@ -18,6 +18,8 @@ public class Player : MonoBehaviour
     public float jumpTime;
     private float verticalVelocity = 0f;
     public Height heightInternal;
+    public LayerMask obstacleLayers;
+    public bool isAlive;
     public Height height
     {
         get => heightInternal;
@@ -25,6 +27,7 @@ public class Player : MonoBehaviour
         {
             if (heightInternal != value)
             {
+
                 heightInternal = value;
                 switch (heightInternal)
                 {
@@ -90,19 +93,34 @@ public class Player : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         Lane = Lanes.Middle;
         animator = GetComponentInChildren<Animator>();
         animator.SetTrigger("Run");
         height = Height.Ground;
+        isAlive = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.position += Vector3.forward * speed * Time.deltaTime;
+        MoveForward();
+        CheckGround();
+        CheckForward();
+    }
 
+    void MoveForward()
+    {
+        if (isAlive)
+        {
+            transform.position += Vector3.forward * speed * Time.deltaTime;
+        }
+
+    }
+
+    void CheckGround()
+    {
         switch (heightInternal)
         {
             case Height.Roll:
@@ -132,7 +150,6 @@ public class Player : MonoBehaviour
                 {
                     verticalVelocity = 0f;
                     model.transform.position = groundHit.point;
-                    break;
                 } else
                 {
                     height = Height.Air;
@@ -143,6 +160,16 @@ public class Player : MonoBehaviour
                 break;
             default:
                 break;
+        }
+    }
+
+    void CheckForward()
+    {
+        RaycastHit ForwardHit;
+        if (isAlive && Physics.Raycast(model.transform.position + Vector3.up* .3f, Vector3.forward, out ForwardHit, .5f, obstacleLayers))
+        {
+            animator.SetTrigger("Death");
+            isAlive = false;
         }
     }
 
