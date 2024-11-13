@@ -106,6 +106,15 @@ public class Player : MonoBehaviour
         switch (heightInternal)
         {
             case Height.Roll:
+                if (Physics.Raycast(model.transform.position + Vector3.up* .3f, Vector3.down, out groundHit, .5f, groundLayers))
+                {
+                    verticalVelocity = 0f;
+                    height = Height.Ground;
+                } else
+                {
+                    verticalVelocity -= gravity * 5 * Time.deltaTime;
+                    model.transform.position += Vector3.up * verticalVelocity * Time.deltaTime;
+                }
                 break;
             case Height.Air:
                 if (Physics.Raycast(model.transform.position + Vector3.up* .3f, Vector3.down, out groundHit, .5f, groundLayers))
