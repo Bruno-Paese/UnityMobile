@@ -169,6 +169,7 @@ public class Player : MonoBehaviour
         if (isAlive && Physics.Raycast(model.transform.position + Vector3.up* .3f, Vector3.forward, out ForwardHit, .5f, obstacleLayers))
         {
             animator.SetTrigger("Death");
+            Game.instance.ui.OpenMenuEnd();
             isAlive = false;
         }
     }

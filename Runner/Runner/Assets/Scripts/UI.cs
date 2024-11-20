@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class UI : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class UI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        menu.SetActive(false);
     }
 
     // Update is called once per frame
@@ -45,6 +46,8 @@ public class UI : MonoBehaviour
         menu.SetActive(true);
         textCoins.text = Game.instance.coins.ToString();
         textPoints.text = Game.instance.points.ToString();
+        HandleRecord();
+        textRecord.text = PlayerPrefs.GetInt("RecordPoints", 0).ToString();
     }
 
     public void Continue()
@@ -55,6 +58,16 @@ public class UI : MonoBehaviour
 
     public void PlayAgain()
     {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         menu.SetActive(false);
+    }
+
+    public void HandleRecord()
+    {
+        if (PlayerPrefs.GetInt("RecordPoints", 0) < Game.instance.points)
+        {
+            PlayerPrefs.SetInt("RecordPoints", Game.instance.points);
+            labelRecord.text = "New Record";
+        }
     }
 }
